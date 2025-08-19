@@ -4,9 +4,9 @@ let lastRot = 0;
 let lastStepTime = 0;
 let isCounting = false;
 
-const accThreshold = 3;
+const accThreshold = 2;
 const rotThreshold = 0.2;
-const minStepInterval = 300; // ms
+const minStepInterval = 250; // ms
 
 const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
 let stepHistory = JSON.parse(localStorage.getItem('stepHistory')) || {};
@@ -112,6 +112,7 @@ function drawChart() {
     }
   });
 }
+
 
 
 
