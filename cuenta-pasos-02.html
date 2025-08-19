@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contador de Pasos Mejorado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    #steps {
+      font-size: 48px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contador de Pasos</h1>
+  <button onclick="startCounting()">Iniciar</button>
+  <button onclick="resetSteps()">Reiniciar</button>
+  <div id="steps">Pasos: 0</div>
+
+  <script>
+    let stepCount = parseInt(localStorage.getItem('stepCount')) || 0;
+    document.getElementById('steps').textContent = `Pasos: ${stepCount}`;
+
+    let lastAcc = 0;
+    let lastRot = 0;
+    let isCounting = false;
+    let accThreshold = 12;    // Umbral de aceleración
+    let rotThreshold = 1.0;   // Umbral de rotación (radianes/segundo)
+    let lastStepTime = 0;
+    let minStepInterval = 400; // milisegundos entre pasos
+
+    function startCounting() {
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            if (response === 'granted') {
+              isCounting = true;
+              window.addEventListener('devicemotion', handleMotion);
+            } else {
+              alert('Permiso denegado para usar sensores.');
+            }
+          })
+          .catch(console.error);
+      } else {
+        isCounting = true;
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    }
+
+    function handleMotion(event) {
+      if (!isCounting) return;
+
+      const acc = event.acceleration;
+      const rot = event.rotationRate;
+
+      if (!acc || !rot) return;
+
+      const totalAcc = Math.sqrt(
+        (acc.x || 0) ** 2 +
+        (acc.y || 0) ** 2 +
+        (acc.z || 0) ** 2
+      );
+
+      const totalRot = Math.sqrt(
+        (rot.alpha || 0) ** 2 +
+        (rot.beta || 0) ** 2 +
+        (rot.gamma || 0) ** 2
+      );
+
+      const now = Date.now();
+      const accDelta = Math.abs(totalAcc - lastAcc);
+      const rotDelta = Math.abs(totalRot - lastRot);
+
+      if (
+        accDelta > accThreshold &&
+        rotDelta > rotThreshold &&
+        (now - lastStepTime) > minStepInterval
+      ) {
+        stepCount++;
+        lastStepTime = now;
+        localStorage.setItem('stepCount', stepCount);
+        document.getElementById('steps').textContent = `Pasos: ${stepCount}`;
+      }
+
+      lastAcc = totalAcc;
+      lastRot = totalRot;
+    }
+
+    function resetSteps() {
+      stepCount = 0;
+      localStorage.setItem('stepCount', stepCount);
+      document.getElementById('steps').textContent = `Pasos: ${stepCount}`;
+    }
+  </script>
+</body>
+</html>
