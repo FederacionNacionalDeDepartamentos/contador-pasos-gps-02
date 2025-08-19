@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contador de Pasos Mejorado</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Contador de Pasos</h1>
+  <button onclick="startCounting()">Iniciar</button>
+  <button onclick="resetSteps()">Reiniciar Día</button>
+  <div id="steps">Pasos hoy: 0</div>
+
+  <h2>Historial (últimos 7 días)</h2>
+  <canvas id="stepChart" width="300" height="150"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>

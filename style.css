@@ -1,0 +1,17 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 10px;
+}
+#steps {
+  font-size: 36px;
+  margin: 20px 0;
+}
+canvas {
+  margin-top: 30px;
+}
