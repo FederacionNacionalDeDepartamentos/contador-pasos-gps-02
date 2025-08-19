@@ -4,7 +4,7 @@ let lastRot = 0;
 let lastStepTime = 0;
 let isCounting = false;
 
-const accThreshold = 4;
+const accThreshold = 3;
 const rotThreshold = 0.2;
 const minStepInterval = 300; // ms
 
@@ -112,6 +112,7 @@ function drawChart() {
     }
   });
 }
+
 
 
 
