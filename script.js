@@ -11,6 +11,8 @@ const minStepInterval = 250; // ms
 const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
 let stepHistory = JSON.parse(localStorage.getItem('stepHistory')) || {};
 
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbweV3bFFb_xfWWnoaOBzMCjWaXORpeS2C48A_tGoLJEA5iZ29U3T8Bx_1zc4PZ_s-8/exec"; // 👈 Pega aquí la URL de tu Apps Script WebApp
+
 // Cargar pasos del día
 if (stepHistory[today]) {
   stepCount = stepHistory[today];
@@ -57,28 +59,13 @@ function handleMotion(event) {
     localStorage.setItem('stepHistory', JSON.stringify(stepHistory));
     updateStepDisplay();
     drawChart();
+
+    // 👇 guardar en Google Sheet
+    saveStepsToSheet(stepCount);
   }
 
   lastAcc = totalAcc;
   lastRot = totalRot;
-
-
-  // Envia pasos a Google
-  if (
-    Math.abs(totalAcc - lastAcc) > accThreshold &&
-    Math.abs(totalRot - lastRot) > rotThreshold &&
-    (now - lastStepTime) > minStepInterval
-  ) {
-    stepCount++;
-    lastStepTime = now;
-    stepHistory[today] = stepCount;
-    localStorage.setItem('stepHistory', JSON.stringify(stepHistory));
-    updateStepDisplay();
-    drawChart();
-
-    // 👇 enviar cada paso al Google Sheet
-    saveStepsToSheet(stepCount);
-}
 }
 
 function updateStepDisplay() {
@@ -131,11 +118,7 @@ function drawChart() {
   });
 }
 
-
-
-// Envia pasos a Google
-const SHEET_URL = "https://script.google.com/a/macros/fnd.org.co/s/AKfycbyfvjmJjNX6Ap6kLpkhkWL8cb4cYXLFc91XrJ5Y8sS0sX11j_GojAuC5obIgb0OrA/exec"; // reemplaza con la URL que te dio Google
-
+// 🔗 Enviar pasos al Google Sheet
 function saveStepsToSheet(pasos) {
   const data = {
     fecha: new Date().toISOString().split('T')[0], // YYYY-MM-DD
@@ -146,5 +129,8 @@ function saveStepsToSheet(pasos) {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
-  }).catch(err => console.error("Error guardando en Sheet:", err));
+  })
+  .then(r => r.text())
+  .then(console.log)
+  .catch(err => console.error("Error guardando en Sheet:", err));
 }
